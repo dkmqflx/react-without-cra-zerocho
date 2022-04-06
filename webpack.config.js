@@ -1,4 +1,5 @@
 const path = require('path'); // node에서 경로를 쉽게 조작할 수 있게 사용할 수 있는 것
+const webpack = require('webpack');
 
 module.exports = {
   name: 'wordrelay-setting',
@@ -23,11 +24,39 @@ module.exports = {
         test: /\.jsx?/,
         loader: 'babel-loader', // 옛날 브라우저와 호횐되는 문법으로 바꿔주겠다
         options: {
-          presets: ['@babel/preset-env', '@babel/preset-react'],
+          presets: [
+            [
+              '@babel/preset-env',
+              {
+                targets: {
+                  browsers: ['> 5% in KR', 'last 2 chrome versions'], // 가장 최신의 크롬의 2 버전만 (ex. 69, 70)
+                  // 지원하는 구체적인 브라우저를 명시해줄 수 있다
+                  // 예전 브라우저를 할 수록 최신 문법을 예전 문법으로 바꿔야 하기 때문에 바벨의 작업량이 너무 많아져서 점점 더 느려진다
+                  // 따라서 회사에 지원하려는 브라우저만 적어준다
+                  // https://github.com/browserslist/browserslist
+                  // 예를 들어 어떤 타겟을 잡아야할 지 모르겠다
+                  // browsers: ['> 5% in KR', 'last 2 chrome versions'],
+                  // 한국에서 브라우저 점유율이 5퍼센트 이상인 브라우저는 다 지원한다
+                  // 한국에는 ie 사용 비율이 높으니까 지원되는데 미국에는 ie 사용 비율이 적으니까 지원안할 수 있다.
+                },
+                debug: true, // 개발용에서는 디버그 true
+              },
+            ],
+            '@babel/preset-react',
+          ],
+
+          plugins: [],
+
+          // '@babel/preset-env', 이러한 방법으로 설정을 해줄 수 있다
+          // preset은 plugin들의 모음이다
+          //'@babel/preset-env'이 하나로 보여도 안에 많은 플러그인들이 합쳐져 있다
         }, // babel의 옵션들
       },
     ],
   },
+
+  // 플러그인은 확장 프로그램 같은 것, 웹팩에서 module 적용하는 것 이외에 추가적으로 무엇인가 하고 싶을 때 사용한다
+  plugins: [new webpack.LoaderOptionsPlugin({ debug: true })],
 
   output: {
     path: path.join(__dirname, 'dist'), // 경로를 알아서 합쳐준다, __dirname은 현재 폴더
