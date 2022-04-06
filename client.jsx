@@ -4,4 +4,4 @@ const ReactDom = require('react-dom');
 
 const { default: WordRelay } = require('./WordRelay');
 
-ReactDom.render(<WordRelay></WordRelay>, document.querySelector('#id'));
+ReactDom.render(<WordRelay></WordRelay>, document.querySelector('#root'));

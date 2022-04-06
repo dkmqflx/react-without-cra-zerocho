@@ -12,6 +12,23 @@ module.exports = {
     // client.jsx안에 WordRelay가 있기 때문에 웹팩이 알아서 다 불러서 처리해준다.
     // 알아서 웹팩이 알아서 client.jsx이 있는 것을 찾아서 app.js로 만들어준다
   }, // 입력
+
+  // babel core가 바벨의 기본적인 것들 들어있는 것
+  // bable/preset-env가 브라우저에 맞게 알아서 최신 문법을 예전 문법으로 바꿔준다
+  // babel/preset-react : jsx 같은 것 지원할 수 있다, jsx 같은 것들을 바꿔준다
+  // babel-loader : bable과 웹팩을 연결해준다
+  module: {
+    rules: [
+      {
+        test: /\.jsx?/,
+        loader: 'babel-loader', // 옛날 브라우저와 호횐되는 문법으로 바꿔주겠다
+        options: {
+          presets: ['@babel/preset-env', '@babel/preset-react'],
+        }, // babel의 옵션들
+      },
+    ],
+  },
+
   output: {
     path: path.join(__dirname, 'dist'), // 경로를 알아서 합쳐준다, __dirname은 현재 폴더
     filename: 'app.js',
