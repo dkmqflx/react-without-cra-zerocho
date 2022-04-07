@@ -1,10 +1,11 @@
 const path = require('path'); // node에서 경로를 쉽게 조작할 수 있게 사용할 수 있는 것
 const webpack = require('webpack');
+const RefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 module.exports = {
   name: 'wordrelay-setting',
   mode: 'development', // 실제 서비스에서는 production
-  devtool: 'eval', // 빠르게 하겠다는 것
+  devtool: 'eval', // 빠르게 하겠다는 것,실서비스 : hidden-source-map
   resolve: {
     extensions: ['.js', '.jsx'], // 확장자가 많아질 것이기 때문에 일일이 client.jsx 적어줄 수 없다
   },
@@ -45,7 +46,9 @@ module.exports = {
             '@babel/preset-react',
           ],
 
-          plugins: [],
+          plugins: ['react-refresh/babel'],
+          // babel loader에 플러그인을 넣어준다
+          // 이렇게 하면 바벨이 최신 문법을 예전 문법으로 바꿀 때 hot reloading 기능 까지 추가해준다
 
           // '@babel/preset-env', 이러한 방법으로 설정을 해줄 수 있다
           // preset은 plugin들의 모음이다
@@ -56,12 +59,28 @@ module.exports = {
   },
 
   // 플러그인은 확장 프로그램 같은 것, 웹팩에서 module 적용하는 것 이외에 추가적으로 무엇인가 하고 싶을 때 사용한다
-  plugins: [new webpack.LoaderOptionsPlugin({ debug: true })],
+  plugins: [new webpack.LoaderOptionsPlugin({ debug: true }), new RefreshWebpackPlugin()],
 
   output: {
     path: path.join(__dirname, 'dist'), // 경로를 알아서 합쳐준다, __dirname은 현재 폴더
     filename: 'app.js',
+    publicPath: '/dist/',
   }, // 출력
+
+  devServer: {
+    hot: true,
+    devMiddleware: {
+      publicPath: '/dist', // 웹팩이 파일을 빌드해서 생성을 해주는 경로 , 가상의 경로 , dev server의 경우에는 메모리에 생성을 해준다
+    },
+    static: {
+      directory: path.resolve(__dirname), // 실제로 존재하는 정적 파일들의 경로, ex) 웹팩 파일과 index.html이 같은 경로에 있으므로 이렇게 처리
+    },
+  },
 };
 
 // 웹팩은 webpack.config.js로 모든게 돌아간다
+
+// "@pmmmwh/react-refresh-webpack-plugin", "react-refresh"는 hot reloading을 위한 것
+// 웹팩 데브 서버가 변경점을 찾으면 새로고침은 시켜준다
+// 새로 고침의 단점은 기존 데이터가 다 날아가 버린다
+// 하지만 Hot realoding은 기존의 데이터를 유지하면서 화면을 바꿔주는 것
